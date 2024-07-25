@@ -5,7 +5,7 @@ use std::error::Error;
 use std::fs::{self, File};
 use std::path::Path;
 
-use crate::models::{Endpoint, Field, Output};
+use crate::models::{Endpoint, Field, Output, Property};
 
 pub fn process_csv(input_file: &str, output_folder: &str) -> Result<(), Box<dyn Error>> {
     // Open the CSV file
@@ -38,15 +38,16 @@ pub fn process_csv(input_file: &str, output_folder: &str) -> Result<(), Box<dyn 
     }
 
     // Collect relevant field data
+    // Collect relevant field data
     let mut fields = vec![];
     for (i, header) in headers.iter().enumerate() {
         if column_values[i].len() > 1 {
             let mut properties = vec![];
             if fully_populated[i] {
-                properties.push("mandatory".to_string());
+                properties.push(Property::Mandatory);
             }
             if is_number[i] {
-                properties.push("number".to_string());
+                properties.push(Property::Number);
             }
             fields.push(Field {
                 name: header.to_string(),
@@ -54,7 +55,6 @@ pub fn process_csv(input_file: &str, output_folder: &str) -> Result<(), Box<dyn 
             });
         }
     }
-
     // Generate a list of endpoints
     let endpoints = vec![
         Endpoint {

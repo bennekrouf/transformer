@@ -10,7 +10,7 @@ endpoints:
 fields:
 - name: CardCode
   properties:
-  - mandatory
+  - Mandatory
   - number
 - name: CardName
   properties:
