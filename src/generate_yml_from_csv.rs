@@ -5,7 +5,7 @@ use std::error::Error;
 use std::fs::{self, File};
 use std::path::Path;
 
-use crate::models::{Endpoint, Field, Output, Property};
+use crate::models::{Endpoint, Field, Entity, Property};
 
 pub fn process_csv(input_file: &str, output_folder: &str) -> Result<(), Box<dyn Error>> {
     // Open the CSV file
@@ -73,10 +73,14 @@ pub fn process_csv(input_file: &str, output_folder: &str) -> Result<(), Box<dyn 
             path: "delete_order".to_string(),
             description: "Delete an order".to_string(),
         },
-    ];
+        Endpoint {
+            path: "send_an_email_related_to_order".to_string(),
+            description: "Send an email related to an order".to_string(),
+        },
+   ];
 
     // Create the output structure
-    let output = Output { endpoints, fields };
+    let output = Entity { endpoints, fields };
 
     // Ensure the output folder exists
     fs::create_dir_all(output_folder)?;

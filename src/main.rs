@@ -11,8 +11,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let output_folder = "generated";
 
     let file_path = "generated/orders.yml";
+    process_csv(input_file, output_folder);
     validate_yaml(file_path);
-    // process_csv(input_file, output_folder)
 
     Ok(())
 }

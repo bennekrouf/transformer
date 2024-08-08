@@ -1,7 +1,7 @@
-use crate::models::Output;
-// use serde::Deserialize;
 use serde_yaml;
 use std::fs;
+
+use crate::models::Entity;
 
 // Function to read, validate YAML file, and display result
 pub fn validate_yaml(file_path: &str) {
@@ -15,7 +15,7 @@ pub fn validate_yaml(file_path: &str) {
     };
 
     // Validate YAML
-    match serde_yaml::from_str::<Output>(&yaml_content) {
+    match serde_yaml::from_str::<Entity>(&yaml_content) {
         Ok(data) => {
             // println!("YAML is valid. Parsed data: {:?}", data);
             println!("{} is valid", &file_path);

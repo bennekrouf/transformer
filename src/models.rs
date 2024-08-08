@@ -32,6 +32,7 @@ impl<'de> Deserialize<'de> for Property {
         }
     }
 }
+
 impl fmt::Display for Property {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{:?}", self)
@@ -52,7 +53,7 @@ pub struct Endpoint {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct Output {
+pub struct Entity {
     pub endpoints: Vec<Endpoint>,
     pub fields: Vec<Field>,
 }
