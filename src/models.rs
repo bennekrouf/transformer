@@ -1,3 +1,4 @@
+
 use serde::{Deserialize, Deserializer, Serialize};
 use std::fmt;
 
@@ -50,10 +51,38 @@ pub struct Field {
 pub struct Endpoint {
     pub path: String,
     pub description: String,
+    // Optional parameters and response fields
+    #[serde(default)]
+    pub parameters: Vec<Parameter>,
+    #[serde(default)]
+    pub response: Response,
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Parameter {
+    pub name: String,
+    pub r#type: String,
+    pub description: Option<String>,
+    pub required: bool,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Response {
+    pub r#type: String,
+}
+
+impl Default for Response {
+    fn default() -> Self {
+        Response {
+            r#type: String::new(), // or provide a sensible default value
+        }
+    }
+}
+
+// Define the root entity
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Entity {
     pub endpoints: Vec<Endpoint>,
     pub fields: Vec<Field>,
 }
+
