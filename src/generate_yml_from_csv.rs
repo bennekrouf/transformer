@@ -58,8 +58,8 @@ pub fn process_csv(input_file: &str, output_folder: &str) -> Result<(), Box<dyn 
     }
 
     // Generate a list of endpoints using the external function
-    let order_word = "order"; // or "orders"
-    let endpoints = generate_endpoints(order_word);
+    let domain_word = "order"; // or "orders"
+    let endpoints = generate_endpoints(domain_word);
 
     // Create the output structure
     let output = Entity { endpoints, fields };
