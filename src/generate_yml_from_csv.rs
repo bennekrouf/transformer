@@ -10,6 +10,17 @@ use crate::models::{Field, Entity, Property};
 use crate::generate_yml_endpoints::generate_endpoints;
 
 pub fn process_csv(input_file: &str, output_folder: &str) -> Result<(), Box<dyn Error>> {
+    // Extract the file name without extension
+    let input_path = Path::new(input_file);
+    let file_stem = input_path.file_stem().unwrap_or_default().to_str().unwrap_or_default();
+    
+    // Determine the domain word from the file name
+    let domain_word = if file_stem.ends_with('s') {
+        &file_stem[..file_stem.len() - 1] // Handle plural by removing the trailing 's'
+    } else {
+        file_stem
+    };
+
     // Open the CSV file
     let file = File::open(input_file)?;
     let mut rdr = ReaderBuilder::new().flexible(true).from_reader(file);
@@ -57,8 +68,7 @@ pub fn process_csv(input_file: &str, output_folder: &str) -> Result<(), Box<dyn 
         }
     }
 
-    // Generate a list of endpoints using the external function
-    let domain_word = "order"; // or "orders"
+    // Generate a list of endpoints using the extracted domain word
     let endpoints = generate_endpoints(domain_word);
 
     // Create the output structure
@@ -67,8 +77,9 @@ pub fn process_csv(input_file: &str, output_folder: &str) -> Result<(), Box<dyn 
     // Ensure the output folder exists
     fs::create_dir_all(output_folder)?;
 
-    // Generate the output file path
-    let output_path = Path::new(output_folder).join("orders.yml");
+    // Generate the output file path using the file name
+    let output_file_name = format!("{}.yml", file_stem);
+    let output_path = Path::new(output_folder).join(output_file_name);
     let mut output_file = File::create(output_path)?;
 
     // Write to the YAML file
