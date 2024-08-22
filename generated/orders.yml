@@ -1,45 +1,45 @@
 endpoints:
-- path: get_a_list_of_last_orders
-  description: Retrieve a list of last orders
+- path: get_a_list_of_orders
+  description: Retrieve a list of last orderss
   parameters: []
   response:
-    type: List of orders
+    type: List of orderss
 - path: create_new_order
   description: Create a new order
   parameters:
-  - name: tenant_name
+  - name: order_name
     type: string
-    description: Name of the tenant to create
+    description: Name of the order to create
     required: true
   response:
-    type: Order confirmation
+    type: order confirmation
 - path: update_order
   description: Update an existing order
   parameters:
   - name: id
     type: string
-    description: ID of the entity to update
+    description: ID of the order to update
     required: true
   response:
-    type: Update confirmation
+    type: Update confirmation for order
 - path: delete_order
-  description: Delete an order
+  description: Delete a order
   parameters:
   - name: id
     type: string
-    description: ID of the entity to delete
+    description: ID of the order to delete
     required: true
   response:
-    type: Deletion confirmation
+    type: Deletion confirmation for order
 - path: send_an_email_related_to_order
-  description: Send an email related to an order
+  description: Send an email related to a order
   parameters:
   - name: email
     type: string
-    description: Email address to send the notification to
+    description: Email address to send the notification to about the order
     required: true
   response:
-    type: Email sent confirmation
+    type: Email sent confirmation for order
 fields:
 - name: CardCode
   properties:
