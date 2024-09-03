@@ -1,94 +1,21 @@
-pub mod generated {
-    tonic::include_proto!("transformer");
-}
+
 mod models;
 mod validate_yaml;
 mod generate_yml_endpoints;
 mod generate_yml_from_csv;
+mod process_csv;
+mod transformer_service;
 
-use std::thread::sleep;
-use std::time::Duration;
-use std::fs;
 use std::env;
 use std::path::Path;
-use std::error::Error;
 use tokio::sync::Mutex;
 use std::sync::Arc;
-use tonic::{transport::Server, Request, Response, Status};
-use generated::transformer_service_server::{TransformerService, TransformerServiceServer};
-use generated::{ProcessCsvFilesRequest, ProcessCsvFilesResponse};
+use tonic::transport::Server;
+use crate::transformer_service::generated::transformer_service_server::TransformerServiceServer;
 use dotenvy::from_path;
 use messengerc::{connect_to_messenger_service, MessagingService};
 use tonic_reflection::server::Builder;
-use crate::generate_yml_from_csv::process_csv;
-use crate::validate_yaml::validate_yaml;
-pub struct MyTransformerService;
-
-#[tonic::async_trait]
-impl TransformerService for MyTransformerService {
-    async fn process_csv_files(
-        &self,
-        request: Request<ProcessCsvFilesRequest>,
-    ) -> Result<Response<ProcessCsvFilesResponse>, Status> {
-        let req = request.into_inner();
-
-        let input_directory = req.input_directory;
-        let output_directory = req.output_directory;
-
-        // Ensure the output directory exists
-        if let Err(e) = fs::create_dir_all(&output_directory) {
-            return Ok(Response::new(ProcessCsvFilesResponse {
-                message: format!("Failed to create output directory: {}", e),
-                success: false,
-            }));
-        }
-
-        // Process and validate all CSV files in the input directory
-        match process_csv_files_in_directory(&input_directory, &output_directory) {
-            Ok(_) => Ok(Response::new(ProcessCsvFilesResponse {
-                message: "CSV files processed successfully.".to_string(),
-                success: true,
-            })),
-            Err(e) => Ok(Response::new(ProcessCsvFilesResponse {
-                message: format!("Error processing CSV files: {}", e),
-                success: false,
-            })),
-        }
-    }
-}
-
-// Function to process all CSV files in a given directory (same as before)
-fn process_csv_files_in_directory(input_directory: &str, output_directory: &str) -> Result<(), Box<dyn Error>> {
-    let entries = fs::read_dir(input_directory)?;
-
-    for entry in entries {
-        let entry = entry?;
-        let path = entry.path();
-
-        if path.is_file() && path.extension().map_or(false, |ext| ext == "csv") {
-            let file_name = path.file_stem().unwrap_or_default().to_str().unwrap_or_default();
-            let output_file_path = Path::new(output_directory).join(format!("{}.yml", file_name));
-
-            println!("Processing file: {:?}", path);
-            process_csv(path.to_str().unwrap(), output_directory)?;
-
-            let mut retries = 0;
-            while !fs::metadata(&output_file_path).is_ok() && retries < 10 {
-                sleep(Duration::from_secs(1));
-                retries += 1;
-            }
-
-            println!("Validating YAML file: {:?}", output_file_path);
-            if fs::metadata(&output_file_path).is_ok() {
-                validate_yaml(output_file_path.to_str().unwrap());
-            } else {
-                eprintln!("YAML file not found: {:?}", output_file_path);
-            }
-        }
-    }
-
-    Ok(())
-}
+use crate::transformer_service::MyTransformerService;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
